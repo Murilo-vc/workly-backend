@@ -16,36 +16,31 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    static final String PRIVATE_API_PATTERN = "/api/private/**";
-
-    static final String PUBLIC_API_PATTERN = "/api/public/**";
+    public static final String[] WHITELIST_PATTERNS = {
+            "/login",
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors()
+                .cors(configure -> configure.configurationSource(this.corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(WHITELIST_PATTERNS).permitAll()
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(PRIVATE_API_PATTERN, createCorsConfig(allowedOriginsPrivate));
-        source.registerCorsConfiguration(PUBLIC_API_PATTERN, createCorsConfig(allowedOriginsPublic));
-
-        return source;
-    }
-
-    private CorsConfiguration createCorsConfig(String allowedOrigins) {
-        PatternedOriginCorsConfig configuration = new PatternedOriginCorsConfig();
-        configuration.applyPermitDefaultValues(); // applies basic CORS config
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*")); // allow all origins (not ideal, but will have to do)
         configuration.setAllowedMethods(Collections.singletonList(CorsConfiguration.ALL)); // allow all methods
         configuration.setAllowedOrigins(null); // remove all origins allowed entry
-        List<String> originsConfig = List.of(allowedOrigins.split(","));
-        for (String originAllowed : originsConfig) {
-            configuration.addAllowedOrigin(originAllowed.trim());
-        }
-        return configuration;
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
