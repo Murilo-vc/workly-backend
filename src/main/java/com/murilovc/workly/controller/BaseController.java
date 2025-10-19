@@ -1,6 +1,7 @@
 package com.murilovc.workly.controller;
 
 import com.murilovc.workly.handler.ApiError;
+import com.murilovc.workly.handler.exception.InvalidTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,5 +25,15 @@ public class BaseController {
                         .message(e.getMessage())
                         .path(request.getRequestURI())
                         .build());
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ApiError> handleInvalidTokenException(IllegalArgumentException e, HttpServletRequest request) {
+        log.error("InvalidTokenException - {}", e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(ApiError.builder()
+                .message(e.getMessage())
+                .build());
     }
 }

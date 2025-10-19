@@ -4,6 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum RoleKeyEnum {
-    COMPANY,
-    USER
+    COMPANY("company"),
+    USER("user");
+
+    private final String id;
+
+    RoleKeyEnum(final String id) {
+        this.id = id;
+    }
 }

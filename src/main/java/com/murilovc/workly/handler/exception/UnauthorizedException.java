@@ -1,0 +1,10 @@
+package com.murilovc.workly.handler.exception;
+
+import org.springframework.http.HttpStatus;
+
+public class UnauthorizedException extends BaseException {
+
+    public UnauthorizedException(final String message) {
+        super(message, HttpStatus.UNAUTHORIZED);
+    }
+}
