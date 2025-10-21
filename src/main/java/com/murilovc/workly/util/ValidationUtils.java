@@ -76,7 +76,7 @@ public final class ValidationUtils {
     }
 
     public static FieldErrorDto validatePhone(final String text) {
-        if (text == null) {
+        if (text == null || text.isBlank()) {
             return null;
         }
 
@@ -94,7 +94,7 @@ public final class ValidationUtils {
     }
 
     public static FieldErrorDto validateExperience(final String text) {
-        if (text == null) {
+        if (text == null || text.isBlank()) {
             return null;
         }
 
@@ -112,7 +112,7 @@ public final class ValidationUtils {
     }
 
     public static FieldErrorDto validateEducation(final String text) {
-        if (text == null) {
+        if (text == null || text.isBlank()) {
             return null;
         }
 

@@ -15,6 +15,7 @@ import com.murilovc.workly.security.user.AppUserDetails;
 import com.murilovc.workly.service.AuthService;
 import com.murilovc.workly.service.UserService;
 import com.murilovc.workly.util.SecurityUtils;
+import com.murilovc.workly.util.StringUtils;
 import com.murilovc.workly.util.ValidationUtils;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
@@ -57,19 +58,22 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(@NonNull @NotNull final UserCreatePayload payload) throws UsernameAlreadyExistsException, ValidationErrorException {
-        final String username = payload.getUsername();
-        final String password = payload.getPassword();
-        final String name = payload.getName();
-        final String email = payload.getEmail();
-        final String phone = payload.getPhone();
-        final String experience = payload.getExperience();
-        final String education = payload.getEducation();
+        final String username = StringUtils.setText(payload.getUsername());
+        final String password = StringUtils.setText(payload.getPassword());
+        final String name = StringUtils.setText(payload.getName());
+        final String email = StringUtils.setText(payload.getEmail());
+        final String phone = StringUtils.setText(payload.getPhone());
+        final String experience = StringUtils.setText(payload.getExperience());
+        final String education = StringUtils.setText(payload.getEducation());
 
+        this.validateCreateFields(payload);
+
+        assert username != null;
+        assert name != null;
+        assert password != null;
         if (this.userRepository.existsByUsernameIgnoreCase(username)) {
             throw new UsernameAlreadyExistsException();
         }
-
-        this.validateCreateFields(payload);
 
         final User user = new User(
             username,
@@ -100,12 +104,12 @@ public class UserServiceImpl implements UserService {
         final User user = this.userRepository.findOneById(currentUser.getId())
             .orElseThrow(UserNotFoundException::new);
 
-        user.setName(payload.getName());
-        user.setEmail(payload.getEmail());
-        user.setPassword(payload.getPassword());
-        user.setPhone(payload.getPhone());
-        user.setExperience(payload.getExperience());
-        user.setEducation(payload.getEducation());
+        user.setName(StringUtils.setText(payload.getName()));
+        user.setEmail(StringUtils.setText(payload.getEmail()));
+        user.setPassword(StringUtils.setText(payload.getPassword()));
+        user.setPhone(StringUtils.setText(payload.getPhone()));
+        user.setExperience(StringUtils.setText(payload.getExperience()));
+        user.setEducation(StringUtils.setText(payload.getEducation()));
 
         this.userRepository.save(user);
     }
